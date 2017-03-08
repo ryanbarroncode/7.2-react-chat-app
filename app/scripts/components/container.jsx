@@ -14,11 +14,15 @@ var ChatContainer = React.createClass({
     // messageCollection.add({message: 'sketchy black market talk'})
     var self = this;   //closure
     messageCollection.fetch().done(function(){
-      self.setState({messageCollection: messageCollection});
+      self.setState({messageList: messageCollection});
     });
     return {
       messageList: messageCollection
     };
+  },
+  addChatMessage: function(data){
+    this.state.messageList.create(data);
+    this.setState({messageList: this.state.messageList});
   },
   // messageList: function(chatItem){
   //   var messageList = this.state.messageList;
@@ -26,7 +30,6 @@ var ChatContainer = React.createClass({
   //   this.setState({messageList: messageList});
   // },
   render: function(){
-console.log(this.state.messageList);
 //Make the form from start to finish with notes and step by step directions
     // console.log(this.state.messageList);
 
@@ -35,11 +38,9 @@ console.log(this.state.messageList);
         <div className="row">
           <div className="col-md-12">
 
-            <MessageForm />
+            <MessageForm addChatMessage={this.addChatMessage}/>
 
-            <MessageList collection={this.state.messageList}/>
-
-
+            <MessageList collection={this.state.messageList} />
 
           </div>
         </div>
@@ -58,7 +59,8 @@ var MessageForm = React.createClass({
 
   handleSubmit: function(event){
     event.preventDefault();
-    console.log('here');
+    this.props.addChatMessage(this.state)
+    console.log(this.state);
   },
 
   updateMessage: function(event){
@@ -86,14 +88,11 @@ var MessageForm = React.createClass({
 
 var MessageList = React.createClass({
   render: function(){
-    console.log(this.props.collection);
 
     var messageHtml = this.props.collection.map(function(chatMessage){
-      console.log('chatMessage', chatMessage);
       return <li key={chatMessage.cid}>{ chatMessage.get('message')} </li>;
     });
 
-    console.log(messageHtml);
 
     return(
       <ul>
